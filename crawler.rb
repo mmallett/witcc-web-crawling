@@ -7,7 +7,6 @@ start = 1
 requests = 0
 
 CLASSES_URL = 'https://www.witcc.edu/classes/index.cfm?start='
-NUMBER_CLASSES = 2314
 
 start_time = Time.now
 
@@ -18,7 +17,9 @@ while not done do
 	page = Nokogiri::HTML(RestClient.get(url))
 	requests += 1
 
-	page.css('#classesDisplay div').each do |course|
+	courses = page.css('#classesDisplay div')
+
+	courses.each do |course|
 
 		course_data = course.css('h3 a')
 		id = course_data.css('.courseID').text
@@ -26,13 +27,15 @@ while not done do
 		dates = course_data.css('.courseDates').text
 		campus = course_data.css('.courseCampus').text
 
+		description = course.css('div.ui-accordion-content').text
+
 		puts "#{id} #{title} #{dates} #{campus}"
 
 	end
 
 	start += 50
 
-	done = start > NUMBER_CLASSES
+	done = courses.count == 0
 
 end
 
